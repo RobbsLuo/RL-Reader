@@ -1,4 +1,4 @@
-<img src="public/icons/icon.svg" width="88" height="88" alt="RL-Reader">
+<p align="center"><img src="public/icons/icon.svg" width="88" height="88" alt="RL-Reader"></p>
 
 # RL-Reader
 
