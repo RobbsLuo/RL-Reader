@@ -1,5 +1,11 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
   <rect width="128" height="128" rx="28" fill="#1f2328"/>
-  <path fill-rule="evenodd" d="M31 88V40h27a21 21 0 0 1 0 42H41v6zM60 51a10 10 0 1 0 0 20 10 10 0 0 0 0-20z" fill="#ffffff"/>
+  <g fill="none" stroke="#ffffff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M34 40V88"/>
+    <path d="M34 40h20a13 13 0 0 1 0 26H34"/>
+    <path d="M51 66l17 22"/>
+    <path d="M82 40v48"/>
+    <path d="M82 88h14"/>
+  </g>
   <rect x="31" y="97" width="66" height="7" rx="3.5" fill="#4493f8"/>
 </svg>

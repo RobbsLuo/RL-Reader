@@ -1,3 +1,5 @@
+<img src="public/icons/icon.svg" width="88" height="88" alt="RL-Reader">
+
 # RL-Reader
 
 隐私优先的本地文档阅读器扩展（Chrome / Edge / Brave）。Markdown、HTML、图片、PDF、文本、音视频都能在浏览器里直接打开阅读：零账号、零遥测、不上传任何内容。
@@ -62,6 +64,7 @@ npm run build
 npm run dev        # 监听构建 content script
 npm run build      # 构建到 dist/
 npm run typecheck  # 类型检查
+npm run icons      # 由 icon.svg 重新渲染各尺寸 PNG
 npm run test       # Playwright 冒烟测试（需先 build）
 npm run package    # 打 release/*.zip
 ```
@@ -73,7 +76,7 @@ npm run package    # 打 release/*.zip
 ```
 public/
   manifest.json        MV3 清单（版本由 package.json 同步）
-  icons/               图标
+  icons/               图标（icon.svg 为源文件，PNG 由它渲染）
 src/
   content.ts           入口：识别 md 页面 → 读取源码 → 挂载
   background.ts        service worker：解析目录索引页（file:// 与 autoindex）、读取文本源码
@@ -89,6 +92,7 @@ scripts/
   smoke.mjs            Playwright 冒烟测试
   shots.mjs            视觉截图（默认输出到 test-artifacts/shots）
   package.sh           打包 zip
+  icons.sh             由 icon.svg 渲染 PNG 图标
   sync-version.mjs     同步版本号
 docs/
   design-rules.md      视觉契约：色板、栅格、断点、动效
