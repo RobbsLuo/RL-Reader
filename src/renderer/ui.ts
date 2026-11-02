@@ -178,9 +178,9 @@ export function mount(
   const root = document.createElement('div')
   root.className = 'mr-root'
   root.innerHTML = `
-    <div class="mr-toolbar" role="toolbar" aria-label="Pane Reader">
-      <span class="mr-brand" aria-hidden="true">pr</span>
-      <span class="mr-toolbar-name">Pane Reader</span>
+    <div class="mr-toolbar" role="toolbar" aria-label="RL-Reader">
+      <span class="mr-brand" aria-hidden="true">rl</span>
+      <span class="mr-toolbar-name">RL-Reader</span>
       <span class="mr-toolbar-doc"></span>
       <span class="mr-toolbar-spacer"></span>
       <button type="button" data-act="files" title="文件目录" aria-label="显示 / 隐藏文件目录" hidden>${ICONS.files}</button>

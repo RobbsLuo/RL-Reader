@@ -1,4 +1,4 @@
-# Pane Reader
+# RL-Reader
 
 隐私优先的本地文档阅读器扩展（Chrome / Edge / Brave）。Markdown、HTML、图片、PDF、文本、音视频都能在浏览器里直接打开阅读：零账号、零遥测、不上传任何内容。
 
@@ -29,7 +29,7 @@
 
 ### 方式一：Release zip（推荐）
 
-1. 从 [Releases](../../releases/latest) 下载 `pane-reader-v*.zip` 并解压
+1. 从 [Releases](../../releases/latest) 下载 `rl-reader-v*.zip` 并解压
 2. 打开 `chrome://extensions`（Edge 是 `edge://extensions`），打开右上角「开发者模式」
 3. 点「加载已解压的扩展程序」，选择**解压后直接包含 `manifest.json` 的那层目录**
 4. 点扩展的「详情」，把「允许访问文件网址」打开，否则打不开本地 md

@@ -9,7 +9,7 @@ const EXE =
   process.env.CHROME_PATH ??
   `${process.env.HOME}/Library/Caches/ms-playwright/chromium-1248/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing`
 
-const SAMPLE = `# Pane Reader 冒烟测试
+const SAMPLE = `# RL-Reader 冒烟测试
 
 这是一段**中文正文**，包含行内代码 \`npm run build\` 和[链接](https://example.com)。
 

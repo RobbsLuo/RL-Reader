@@ -10,7 +10,7 @@ dist/
 # ---------- 打包产物 ----------
 # 本地 npm run package 输出到 release/，CI 直接打在仓库根目录
 release/
-/pane-reader-*.zip
+/rl-reader-*.zip
 
 # ---------- 测试与截图产物 ----------
 # smoke.mjs 每次运行都会重写这些夹具和截图
