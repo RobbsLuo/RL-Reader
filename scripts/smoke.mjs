@@ -76,6 +76,16 @@ const server = createServer((req, res) => {
     res.end(SAMPLE)
     return
   }
+  if (req.url === '/docs/b.md') {
+    res.writeHead(200, { 'Content-Type': 'text/plain; charset=utf-8' })
+    res.end('# B 文档\n\n第二篇。\n\n![相对图](pic.png)\n')
+    return
+  }
+  if (req.url === '/docs/pic.png') {
+    res.writeHead(200, { 'Content-Type': 'image/png' })
+    res.end(PIC_PNG)
+    return
+  }
   // 在线 HTML 预览：独立的目录，避免影响别的目录树断言
   if (req.url === '/htmlpreview/a.md') {
     res.writeHead(200, { 'Content-Type': 'text/plain; charset=utf-8' })
@@ -149,6 +159,11 @@ writeFileSync(
 )
 writeFileSync('test-artifacts/docs/a-very-long-file-name-for-hover-tooltip-check.md', '# 长文件名\n\n正文。\n')
 writeFileSync('test-artifacts/docs/sub/deep.md', '# Deep\n\n子目录文件。\n')
+// 子目录里的相对路径：原地切换后必须按 nested.md 自己所在目录解析
+writeFileSync(
+  'test-artifacts/docs/sub/nested.md',
+  '# Nested\n\n![相对图](../pic.png)\n\n[兄弟文档](deep.md)\n',
+)
 writeFileSync('test-artifacts/docs/x.txt', 'not markdown')
 writeFileSync(
   'test-artifacts/docs/sample.html',
@@ -377,6 +392,43 @@ try {
     JSON.stringify(onlineTree),
   )
   await dirPage.screenshot({ path: 'test-artifacts/http-tree.png' })
+
+  // 3.5.1 在线切 md：地址栏同步成新文件，相对图片按新文件解析
+  await dirPage.evaluate(() => {
+    const sr = document.getElementById('markdown-reader-host').shadowRoot
+    Array.from(sr.querySelectorAll('.mr-tree .mr-node-name'))
+      .find((n) => n.textContent === 'b.md')
+      ?.click()
+  })
+  await dirPage.waitForFunction(
+    () => {
+      const sr = document.getElementById('markdown-reader-host')?.shadowRoot
+      return sr?.querySelector('.mr-article h1')?.textContent?.includes('B 文档') === true
+    },
+    { timeout: 10_000 },
+  )
+  await dirPage.waitForTimeout(600)
+  const onlineSwitch = await dirPage.evaluate(() => {
+    const sr = document.getElementById('markdown-reader-host').shadowRoot
+    const img = sr.querySelector('.mr-article img')
+    return {
+      url: location.href,
+      imgSrc: img?.getAttribute('src') ?? '',
+      imgWidth: img?.naturalWidth ?? 0,
+      current: Array.from(
+        sr.querySelectorAll('.mr-tree .mr-node.is-current .mr-node-name'),
+      ).map((n) => n.textContent),
+    }
+  })
+  check(
+    '在线切换 md 同步地址栏与相对路径',
+    onlineSwitch.url.endsWith('/docs/b.md') &&
+      onlineSwitch.imgSrc.endsWith('/docs/pic.png') &&
+      onlineSwitch.imgWidth > 0 &&
+      onlineSwitch.current[0] === 'b.md',
+    JSON.stringify(onlineSwitch),
+  )
+  await dirPage.close()
 
   // 3.6 在线 HTML 预览：按钮能点，但不给 same-origin（拿不到站点 cookie / 父页面 DOM）
   const remoteHtml = await ctx.newPage()
@@ -648,6 +700,59 @@ try {
     )
   })
   check('子目录懒加载', expanded.includes('deep.md'), expanded.join(','))
+
+  // 子目录里的 md：原地切换后相对图片 / 链接要按它自己所在目录解析
+  await filePage.evaluate(() => {
+    const sr = document.getElementById('markdown-reader-host').shadowRoot
+    Array.from(sr.querySelectorAll('.mr-children .mr-node-name'))
+      .find((n) => n.textContent === 'nested.md')
+      ?.click()
+  })
+  await filePage.waitForFunction(
+    () => {
+      const sr = document.getElementById('markdown-reader-host')?.shadowRoot
+      return sr?.querySelector('.mr-article h1')?.textContent?.trim() === 'Nested'
+    },
+    { timeout: 10_000 },
+  )
+  await filePage.waitForTimeout(600)
+  const nestedState = await filePage.evaluate(() => {
+    const sr = document.getElementById('markdown-reader-host').shadowRoot
+    const img = sr.querySelector('.mr-article img')
+    const link = sr.querySelector('.mr-article a[href*="deep.md"]')
+    return {
+      imgSrc: img?.getAttribute('src') ?? '',
+      imgWidth: img?.naturalWidth ?? 0,
+      linkHref: link?.getAttribute('href') ?? '',
+      url: location.href,
+      current: Array.from(
+        sr.querySelectorAll('.mr-tree .mr-node.is-current .mr-node-name'),
+      ).map((n) => n.textContent),
+    }
+  })
+  check(
+    '原地切换后相对路径按新文件解析',
+    nestedState.imgSrc.endsWith('/docs/pic.png') &&
+      nestedState.imgWidth > 0 &&
+      nestedState.linkHref.endsWith('/docs/sub/deep.md') &&
+      nestedState.current[0] === 'nested.md',
+    JSON.stringify(nestedState),
+  )
+
+  // 回到 index.md，后续断言依赖它的内容
+  await filePage.evaluate(() => {
+    const sr = document.getElementById('markdown-reader-host').shadowRoot
+    Array.from(sr.querySelectorAll('.mr-tree .mr-node-name'))
+      .find((n) => n.textContent === 'index.md')
+      ?.click()
+  })
+  await filePage.waitForFunction(
+    () => {
+      const sr = document.getElementById('markdown-reader-host')?.shadowRoot
+      return sr?.querySelector('.mr-article h1')?.textContent?.includes('冒烟测试') === true
+    },
+    { timeout: 10_000 },
+  )
 
   // HTML 预览：点树里的 .html 不跳页，正文区换成 iframe
   await filePage.evaluate(() => {

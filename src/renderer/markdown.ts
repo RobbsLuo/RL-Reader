@@ -50,13 +50,26 @@ function slugify(value: string): string {
   return slug || 'section'
 }
 
-function resolveUrl(url: string): string {
+/**
+ * 把相对路径解析成绝对 URL。
+ * base 必须是「当前这篇文档」的地址：文件树里原地切换时 location 还停在旧文件上，
+ * 只有按目标文件解析，图片和相对链接才指向正确位置。
+ */
+function resolveUrl(url: string, base?: string): string {
   if (/^(?:[a-z][a-z0-9+.-]*:|\/\/|#)/i.test(url)) return url
   try {
-    return new URL(url, document.baseURI).href
+    return new URL(url, base ?? document.baseURI).href
   } catch {
     return url
   }
+}
+
+interface RenderEnv {
+  base?: string
+}
+
+function envBase(env: unknown): string | undefined {
+  return (env as RenderEnv | undefined)?.base
 }
 
 export function createMarkdown() {
@@ -123,7 +136,7 @@ export function createMarkdown() {
   md.renderer.rules.image = (tokens, idx, options, env, self) => {
     const token = tokens[idx]
     const src = token.attrGet('src')
-    if (typeof src === 'string') token.attrSet('src', resolveUrl(src))
+    if (typeof src === 'string') token.attrSet('src', resolveUrl(src, envBase(env)))
     token.attrSet('loading', 'lazy')
     token.attrSet('decoding', 'async')
     return defaultImage(tokens, idx, options, env, self)
@@ -136,7 +149,7 @@ export function createMarkdown() {
   md.renderer.rules.link_open = (tokens, idx, options, env, self) => {
     const href = tokens[idx].attrGet('href')
     const hrefValue = typeof href === 'string' ? href : null
-    if (hrefValue) tokens[idx].attrSet('href', resolveUrl(hrefValue))
+    if (hrefValue) tokens[idx].attrSet('href', resolveUrl(hrefValue, envBase(env)))
     if (hrefValue && !hrefValue.startsWith('#')) {
       tokens[idx].attrSet('target', '_blank')
       tokens[idx].attrSet('rel', 'noopener noreferrer')
@@ -232,6 +245,6 @@ export function splitFrontMatter(source: string): {
   return { body: source.slice(match[0].length), entries }
 }
 
-export function renderMarkdown(source: string): string {
-  return markdown.render(source)
+export function renderMarkdown(source: string, base?: string): string {
+  return markdown.render(source, { base })
 }

@@ -309,7 +309,8 @@ export function mount(
   /** 渲染一篇 Markdown（首屏与树里切换共用，不整页刷新） */
   function renderArticle(text: string): void {
     const { body, entries } = splitFrontMatter(text)
-    const sanitized = DOMPurify.sanitize(renderMarkdown(body), {
+    // 按「当前这篇」的地址解析相对图片 / 链接：原地切换时 location 可能还停在旧文件上
+    const sanitized = DOMPurify.sanitize(renderMarkdown(body, docUrl.href), {
       USE_PROFILES: { html: true, mathMl: true, svg: true, svgFilters: true },
       ADD_ATTR: ['target', 'loading', 'decoding', 'align'],
       ALLOWED_URI_REGEXP: SAFE_URI,
@@ -1033,6 +1034,22 @@ export function mount(
 
   let markdownSeq = 0
 
+  /**
+   * 让 document.baseURI 指向当前这篇文档。
+   * 原地切换时 file:// 的 history 换不了路径，地址栏会停在旧文件上，
+   * 靠 <base> 兜住残留的相对路径（我们自己解析过的是绝对地址，这里是兜底）。
+   */
+  function syncDocumentBase(href: string): void {
+    const head = document.head ?? document.documentElement
+    let base = document.querySelector<HTMLBaseElement>('base[data-mr-base]')
+    if (!base) {
+      base = document.createElement('base')
+      base.dataset.mrBase = '1'
+      head.prepend(base)
+    }
+    base.href = href
+  }
+
   /** 文件树里点 Markdown：读完原文就在本页换正文，不整页刷新 */
   async function openMarkdown(entry: DirEntry): Promise<void> {
     const seq = ++markdownSeq
@@ -1066,6 +1083,7 @@ export function mount(
     toolbarDoc.title = entry.name
     // 源码视图始终对应当前这篇
     sourceView.textContent = text
+    syncDocumentBase(entry.url)
     renderArticle(text)
     closeFind()
     markCurrent()
@@ -1073,12 +1091,14 @@ export function mount(
     host.scrollTop = 0
     restoreScroll(docUrl.href)
 
+    // 地址栏跟着换：http(s) 下 replaceState 生效，刷新后停在同一篇
     try {
-      // 地址栏跟着换，刷新后停在同一篇；file:// 下可能被拒，忽略即可
       history.replaceState(null, '', entry.url)
     } catch {
-      /* 忽略 */
+      // file:// 是不透明源，history 不允许换路径；相对路径已由 <base> 兜住
     }
+    // 标签页标题跟着换（file:// 下地址栏动不了，标题是唯一能变的）
+    document.title = entry.name
   }
 
   async function requestDirectory(url: string): Promise<DirEntry[]> {
