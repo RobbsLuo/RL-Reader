@@ -179,7 +179,7 @@ export function mount(
   root.className = 'mr-root'
   root.innerHTML = `
     <div class="mr-toolbar" role="toolbar" aria-label="RL-Reader">
-      <span class="mr-brand" aria-hidden="true">rl</span>
+      <span class="mr-brand" aria-hidden="true">RL</span>
       <span class="mr-toolbar-name">RL-Reader</span>
       <span class="mr-toolbar-doc"></span>
       <span class="mr-toolbar-spacer"></span>
