@@ -2,6 +2,13 @@
 
 # RL-Reader
 
+<p align="center">
+  <a href="../../releases/latest"><img src="https://img.shields.io/github/v/release/RobbsLuo/RL-Reader?label=release" alt="Latest release"></a>
+  <a href="../../blob/main/LICENSE"><img src="https://img.shields.io/github/license/RobbsLuo/RL-Reader" alt="License"></a>
+  <img src="https://img.shields.io/badge/manifest-v3-blue" alt="Manifest V3">
+  <img src="https://img.shields.io/badge/browser-Chrome%20%7C%20Edge%20%7C%20Brave-lightgrey" alt="Browsers">
+</p>
+
 隐私优先的本地文档阅读器扩展（Chrome / Edge / Brave）。Markdown、HTML、图片、PDF、文本、音视频都能在浏览器里直接打开阅读：零账号、零遥测、不上传任何内容。
 
 > 不上架商店，从 GitHub Release 安装。需要手动开启一次「开发者模式」。
@@ -130,6 +137,14 @@ docs/
 不收集任何数据，不加载远程代码，所有解析在本地完成。网络请求只有两类，都是你自己打开的内容本身：读取当前文件所在目录的索引页（生成文件树），以及 HTML / 图片 / 音视频预览加载目标文件自带的资源（图床、CDN 等，和直接用浏览器打开该文件一样）。任何内容都不会发往第三方。
 
 权限：`storage`（保存主题/字号）、`file:///*` 与 `http(s)` 主机权限（读取页面和同目录索引）。
+
+## 反馈与贡献
+
+- 装不上、打不开某类文件：先看「已知限制」，再去 [Discussions](https://github.com/RobbsLuo/RL-Reader/discussions) 提问
+- 渲染错、功能坏：用 [Bug 报告](https://github.com/RobbsLuo/RL-Reader/issues/new?template=bug_report.yml) 模板，带上版本号和复现步骤
+- 想加功能：走 [功能建议](https://github.com/RobbsLuo/RL-Reader/issues/new?template=feature_request.yml) 模板，先描述困扰而不是方案
+- 提 PR：请先跑 `npm run typecheck && npm run build`，UI 改动附截图
+- 更新日志：[Releases](https://github.com/RobbsLuo/RL-Reader/releases)
 
 ## License
 

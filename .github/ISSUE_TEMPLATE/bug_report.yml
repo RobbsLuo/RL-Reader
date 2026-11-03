@@ -1,0 +1,64 @@
+name: Bug 报告
+description: 阅读器渲染、文件树、预览、查找等功能异常
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        请先确认扩展页里显示的是最新版本（Release 页对比 tag）。手动加载的扩展不会自动更新。
+
+  - type: input
+    id: version
+    attributes:
+      label: 扩展版本
+      description: 在 chrome://extensions 的 RL-Reader 卡片上可以看到
+      placeholder: 0.3.4
+    validations:
+      required: true
+
+  - type: input
+    id: browser
+    attributes:
+      label: 浏览器与系统
+      placeholder: Chrome 141 / macOS 26.1
+    validations:
+      required: true
+
+  - type: dropdown
+    id: source
+    attributes:
+      label: 文件来源
+      options:
+        - 本地 file:// 文件
+        - 在线 http(s) 上的 md
+        - 同目录文件树 / 子目录
+        - HTML / 图片 / PDF / 文本 / 音视频预览
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: 复现步骤
+      placeholder: |
+        1. 打开 ...
+        2. 点击 ...
+        3. 出现 ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: 预期 vs 实际
+    validations:
+      required: true
+
+  - type: textarea
+    id: console
+    attributes:
+      label: 控制台报错（可选）
+      description: DevTools Console 里的报错原文，或截图
+      render: shell
+    validations:
+      required: false
